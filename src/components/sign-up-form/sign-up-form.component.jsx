@@ -1,10 +1,17 @@
-import { useState } from 'react'
-import './sign-up-form.scss'
+import { useState, useContext } from 'react'
+import FormInput from '../form-input/form-input.component'
+import Button from '../button/button.component'
+
 import { createAuthUserWithEmailAndPassword,
          createUserDocument
 } from '../../utils/firebase/firebase.utils'
-import FormInput from '../form-input/form-input.component'
-import Button from '../button/button.component'
+
+// Take note that the properties of UserContext are null values
+// But see the effect when it is used inside SignUpForm below
+import { UserContext } from '../../contexts/user.context'
+
+import './sign-up-form.scss'
+
 
 const defaultFormFields = {
   displayName: '',
@@ -16,6 +23,20 @@ const defaultFormFields = {
 const SignUpForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields)
   const {displayName, email, password, confirmPassword} = formFields
+  const {setCurrentUser} = useContext(UserContext)
+
+  //console.log("[SignUpForm]: inside the SignUpForm")
+
+  // No values are changed through the next statement, but the
+  // statement causes the component to be re-rendered.
+  // The next statement effectively hooks into UserContext
+  //const ctxVal = useContext(UserContext)
+  // Because the SignUpForm is hooked into the UserContext, we
+  // see that this line executes again when the use signs in
+  // Consider that Signing in does not concern itself with Signup.
+  // However, the SignUpForm does NOT re-render! - because
+  // nothing changed on the DOM.
+  // It means that this component is only listening for changes.
 
   const handleChange = (event) => {
     const {name, value} = event.target
@@ -33,6 +54,8 @@ const SignUpForm = () => {
       const {user} = await createAuthUserWithEmailAndPassword(
         email, password
       )
+      setCurrentUser(user)
+
       await createUserDocument(user, { displayName })
       setFormFields(defaultFormFields)
     } catch(error) {
