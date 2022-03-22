@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState } from 'react'
 import FormInput from '../form-input/form-input.component'
 import Button from '../button/button.component'
 
@@ -8,7 +8,6 @@ import { createAuthUserWithEmailAndPassword,
 
 // Take note that the properties of UserContext are null values
 // But see the effect when it is used inside SignUpForm below
-import { UserContext } from '../../contexts/user.context'
 
 import './sign-up-form.scss'
 
@@ -23,7 +22,6 @@ const defaultFormFields = {
 const SignUpForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields)
   const {displayName, email, password, confirmPassword} = formFields
-  const {setCurrentUser} = useContext(UserContext)
 
   //console.log("[SignUpForm]: inside the SignUpForm")
 
@@ -54,8 +52,6 @@ const SignUpForm = () => {
       const {user} = await createAuthUserWithEmailAndPassword(
         email, password
       )
-      setCurrentUser(user)
-
       await createUserDocument(user, { displayName })
       setFormFields(defaultFormFields)
     } catch(error) {
@@ -66,6 +62,8 @@ const SignUpForm = () => {
       }
     }
   }
+
+  console.log("[SignUpForm], about to render")
 
   return (
     <div className='sign-up-container'>
