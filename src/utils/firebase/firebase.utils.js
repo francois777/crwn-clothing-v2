@@ -25,7 +25,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
 
 // The following parameters are required by Google
 const provider = new GoogleAuthProvider()
@@ -91,4 +91,4 @@ export const onAuthStateChangedListener = (callback) =>
 
 // Other available parameters are:
 // onAuthStateChanged(auth, callback, errorCallback, completedCallback)
-// 
+//
