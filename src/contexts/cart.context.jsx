@@ -55,8 +55,13 @@ export const CartProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0)
   const [cartTotal, setCartTotal] = useState(0)
 
+  // EFFECTS:
   // The reason for two useEffects is to maintain a
   // single responsibility per useEffect
+
+  // Whenever a cart item is added to or removed from the cart,
+  // counts and totals are affected
+
   useEffect(() => {
     const count = cartItems.reduce(
       (total, cartItem) => total + cartItem.quantity,

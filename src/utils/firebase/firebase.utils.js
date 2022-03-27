@@ -12,7 +12,11 @@ import {
   getFirestore,
   doc,
   getDoc,
-  setDoc
+  setDoc,
+  collection,
+  writeBatch,
+  query,
+  getDocs
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -39,6 +43,33 @@ export const signInWithGoogleRedirect = () => signInWithRedirect(auth, provider)
 
 export const db = getFirestore()
 
+export const addCollectionAndDocuments = async (collectionKey, documents) => {
+  const collectionRef = collection(db, collectionKey)
+  const batch = writeBatch(db)
+
+  documents.forEach((object) => {
+    const docRef = doc(collectionRef, object.title.toLowerCase())
+    batch.set(docRef, object)
+  })
+  await batch.commit()
+  console.log("[firebase], addCollectionAndDocuments, batch committed")
+}
+
+export const getCategoriesAndDocuments = async () => {
+  const collectionRef = collection(db, 'categories')
+  const q = query(collectionRef)
+  const querySnapshot = await getDocs(q);
+  console.log("[firebase.utils] - getCategoriesAndDocuments, querySnapshot: ", querySnapshot);
+  const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
+    const { title, items } = docSnapshot.data()
+    acc[title.toLowerCase()] = items
+    return acc
+  }, {})
+
+  return categoryMap
+}
+
+// Create a document and return a document reference
 export const createUserDocument = async(
   userAuth,
   additionalInformation = {}
@@ -49,8 +80,8 @@ export const createUserDocument = async(
 
   const userDocRef = doc(db, 'users', userAuth.uid)
   const userSnapshot = await getDoc(userDocRef)
-  console.log(userSnapshot)
   console.log(userSnapshot.exists())
+
   // if user document exists, return this document
   // if user document does not exist, create it.
   if(!userSnapshot.exists()) {
