@@ -12,7 +12,6 @@ export const UserContext = createContext({
 export const UserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null)
   const value = { currentUser, setCurrentUser }
-  console.log("[UserProvider], currentUser: ", currentUser)
 
 // When the application initialises, it will mount the UserProvider,
 // which will instantiate this first callback. It will call the listener,
@@ -23,7 +22,6 @@ export const UserProvider = ({ children }) => {
     const unsubscribe = onAuthStateChangedListener((user) => {
       if (user) { createUserDocument(user) }
         setCurrentUser(user)
-        console.log("[UserProvider] (useEffect) - onAuthStateChangedListener, user: ", user)
       })
     return unsubscribe
   }, [])
